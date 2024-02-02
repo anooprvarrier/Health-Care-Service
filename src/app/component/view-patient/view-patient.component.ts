@@ -37,9 +37,9 @@ export class ViewPatientComponent implements OnInit {
     this.today = this.datePipe.transform(Date.now(), "yyyy-MM-dd");
     // add necessary validators
     this.appointmentForm = fb.group({
-      selectDisease: [null],
-      tentativeDate: [null],
-      priority: [null],
+      selectDisease: [null, [Validators.required]],
+      tentativeDate: [null, [Validators.required]],
+      priority: [null, [Validators.required]],
     });
   }
 
@@ -72,11 +72,13 @@ export class ViewPatientComponent implements OnInit {
     // patientId, patientFirstName, patientLastName, disease, priority, tentativedate, registeredTime
     // if booked successfully should redirect to 'requested_appointments' page
     const appointment = {
+      patientId: this.patient.id,
       patientFirstName: this.patient.firstName,
       patientLastName: this.patient.lastName,
       disease: this.appointmentForm.get("selectDisease").value,
       priority: this.appointmentForm.get("priority").value,
       tentativedate: this.appointmentForm.get("tentativeDate").value,
+      registeredTime: new Date(),
     };
     this.dataService.bookAppointment(appointment).subscribe(
       (data) => {

@@ -76,7 +76,6 @@
     id="form-container"
     class="form-container"
     [formGroup]="appointmentForm"
-    (click)="scheduleAppointment()"
   >
     <h2 class="view-header" style="padding-left: 100px">Book Appointment</h2>
 
@@ -109,7 +108,14 @@
             </select>
           </div>
 
-          <div id="error-no-selectDisease" class="alert alert-danger error-msg">
+          <div
+            id="error-no-selectDisease"
+            class="alert alert-danger error-msg"
+            *ngIf="
+              appointmentForm.controls.selectDisease.dirty &&
+              appointmentForm.controls.selectDisease.getError('required')
+            "
+          >
             noselectDisease
           </div>
         </div>
@@ -139,7 +145,14 @@
             </select>
           </div>
 
-          <div id="error-no-priority" class="alert alert-danger error-msg">
+          <div
+            id="error-no-priority"
+            class="alert alert-danger error-msg"
+            *ngIf="
+              appointmentForm.controls.priority.dirty &&
+              appointmentForm.controls.priority.getError('required')
+            "
+          >
             nopriority
           </div>
         </div>
@@ -160,7 +173,14 @@
             />
           </div>
 
-          <div id="error-no-tentativeDate" class="alert alert-danger error-msg">
+          <div
+            id="error-no-tentativeDate"
+            class="alert alert-danger error-msg"
+            *ngIf="
+              appointmentForm.controls.tentativeDate.dirty &&
+              appointmentForm.controls.tentativeDate.getError('required')
+            "
+          >
             notentativeDate
           </div>
         </div>
@@ -173,6 +193,8 @@
           type="submit"
           id="submit-btn"
           class="btn btn-primary submit-btn"
+          (click)="scheduleAppointment()"
+          [disabled]="appointmentForm.invalid"
         >
           Schedule
         </button>
