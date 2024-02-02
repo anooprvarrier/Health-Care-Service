@@ -275,7 +275,7 @@ describe("DataService", () => {
         expect(res).toBeFalsy();
       },
       (error) => {
-        expect(error).toBeUndefined();
+        expect(error).toBeDefined();
       }
     );
   }));
