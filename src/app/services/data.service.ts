@@ -65,7 +65,9 @@ export class DataService {
     // should return the updated status according to the response from api service
     return this.api.updateDetails(userDetails).pipe(
       map((data) => (data ? true : false)),
-      catchError(this.handleError)
+      catchError(() => {
+        return Observable.throw(undefined);
+      })
     );
   }
 
