@@ -1,19 +1,12 @@
-
-import { Injectable } from '@angular/core';
-import { CanActivate, Router } from '@angular/router';
-
-import { DataService } from './data.service';
+import { Injectable } from "@angular/core";
+import { CanActivate, Router } from "@angular/router";
+import { DataService } from "./data.service";
 
 @Injectable()
 export class AuthGuardService implements CanActivate {
-
-  constructor(public dataService: DataService, public router: Router) { }
-
-  canActivate(): boolean {
+  public constructor(public dataService: DataService, public router: Router) {}
+  public canActivate(): boolean {
     // return true if authenticated else redirect to login page
-
-    return;
+    return this.dataService.isLoggedIn;
   }
-
 }
-
