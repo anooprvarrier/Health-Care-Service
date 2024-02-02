@@ -80,8 +80,7 @@ export class FormComponent implements OnInit {
         "",
         [
           Validators.required,
-          Validators.email,
-          Validators.pattern(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/),
+          Validators.email
         ],
       ],
       description: "",

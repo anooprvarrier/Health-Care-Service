@@ -63,10 +63,10 @@ export class DataService {
 
   public updateProfile(userDetails): Observable<boolean> {
     // should return the updated status according to the response from api service
-    return this.api
-      .updateDetails(userDetails)
-      .pipe(map((data) => (data ? true : false)));
-    // .pipe(catchError(this.handleError));
+    return this.api.updateDetails(userDetails).pipe(
+      map((data) => (data ? true : false)),
+      catchError(this.handleError)
+    );
   }
 
   public registerPatient(patientDetails): Observable<any> {

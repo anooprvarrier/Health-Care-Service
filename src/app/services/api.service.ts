@@ -115,6 +115,6 @@ export class ApiService {
   }
 
   private handleError(error: any) {
-    return of(error);
+    return Observable.throw(error);
   }
 }
