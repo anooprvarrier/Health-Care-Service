@@ -1,141 +1,138 @@
-
-import { HttpErrorResponse } from '@angular/common/http';
-import { Injectable } from '@angular/core';
-import { BehaviorSubject } from 'rxjs/BehaviorSubject';
-import { Observable } from 'rxjs/Observable';
-import { of } from 'rxjs/observable/of';
-import { Users } from '../models/users.model';
-import { Patient } from '../models/patient';
-import { Appointment } from '../models/appointment';
-
-import { ApiService } from './api.service';
+import { HttpErrorResponse } from "@angular/common/http";
+import { Injectable } from "@angular/core";
+import { BehaviorSubject } from "rxjs/BehaviorSubject";
+import { Observable } from "rxjs/Observable";
+import { of } from "rxjs/observable/of";
+import { Users } from "../models/users.model";
+import { Patient } from "../models/patient";
+import { Appointment } from "../models/appointment";
+import { ApiService } from "./api.service";
+import { catchError, map } from "rxjs/operators";
 
 @Injectable()
 export class DataService {
+  public isLoggedIn = false;
+  public isLogIn: BehaviorSubject<boolean>;
 
-  isLoggedIn = false;
-  isLogIn: BehaviorSubject<boolean>;
-  constructor(private api: ApiService) {
+  public constructor(private api: ApiService) {
     this.isLogIn = new BehaviorSubject<boolean>(false);
+    this.isLogIn.subscribe((val) => {
+      this.isLoggedIn = val;
+    });
   }
 
-  authenticateUser(username: string, password: string): Observable<boolean> {
-
-    // store 'userId' from response as key name 'userId' to the localstorage
-
-    // return true if user authenticated
-
-    // return false if user not authenticated 
-
-    return;
+  public authenticateUser(
+    username: string,
+    password: string
+  ): Observable<boolean> {
+    return this.api.checkLogin(username, password).pipe(
+      map((data) => {
+        if (data && data.userId) {
+          // store 'userId' from response as key name 'userId' to the localstorage
+          localStorage.setItem("userId", data.userId + "");
+          // return true if user authenticated
+          this.isLogIn.next(true);
+          return true;
+        } else {
+          // return false if user not authenticated
+          return false;
+        }
+      })
+    );
   }
 
-  getAuthStatus(): Observable<boolean> {
-    // return this.isLogIn.asObservable();
-    return;
+  public getAuthStatus(): Observable<boolean> {
+    this.isLogIn.next(this.getUserId() > 0 ? true : false);
+    return this.isLogIn.asObservable();
   }
-  doLogOut() {
+
+  public doLogOut(): boolean {
     // remove the key 'userId' if exists
-
+    this.isLoggedIn = false;
+    if (localStorage.getItem("userId")) {
+      localStorage.removeItem("userId");
+    }
+    this.isLogIn.next(false);
+    return this.isLoggedIn;
   }
 
-  getUserDetails(userId: number): Observable<Users> {
-
+  public getUserDetails(userId: number): Observable<Users> {
     // should return user details retrieved from api service
-
-    return;
+    return this.api.getUserDetails(userId).pipe(catchError(this.handleError));
   }
 
-  updateProfile(userDetails): Observable<boolean> {
-
+  public updateProfile(userDetails): Observable<boolean> {
     // should return the updated status according to the response from api service
-
-    return;
+    return this.api
+      .updateDetails(userDetails)
+      .pipe(map((data) => (data ? true : false)));
+    // .pipe(catchError(this.handleError));
   }
 
-  registerPatient(patientDetails): Observable<any> {
-
-
+  public registerPatient(patientDetails): Observable<any> {
     // should return response retrieved from ApiService
-
-    // handle error 
-
-    return;
-
+    // handle error
+    return this.api
+      .registerPatient(patientDetails)
+      .pipe(catchError(this.handleError));
   }
 
-  getAllPatientsList(): Observable<any> {
-
-
+  public getAllPatientsList(): Observable<any> {
     // should return all patients list retrieved from ApiService
-
-    // handle error 
-
-    return;
-
+    // handle error
+    return this.api.getAllPatientsList().pipe(catchError(this.handleError));
   }
 
-  getParticularPatient(id): Observable<any> {
-
+  public getParticularPatient(id): Observable<any> {
     // should return particular patient details retrieved from ApiService
-
-    // handle error 
-
-    return;
+    // handle error
+    return this.api.getParticularPatient(id).pipe(catchError(this.handleError));
   }
-  
-  getDiseasesList(): Observable<any> {
 
+  public getDiseasesList(): Observable<any> {
     // should return response retrieved from ApiService
-
-    // handle error 
-
-    return;
+    // handle error
+    return this.api.getDiseasesList().pipe(catchError(this.handleError));
   }
 
-  bookAppointment(appointmentDetails): Observable<any> {
-
+  public bookAppointment(appointmentDetails): Observable<any> {
     // should return response retrieved from ApiService
-
-    // handle error 
-
-    return;
+    // handle error
+    return this.api
+      .bookAppointment(appointmentDetails)
+      .pipe(catchError(this.handleError));
   }
 
-  getAppointments(patientId): Observable<any> {
-
+  public getAppointments(patientId): Observable<any> {
     // should return response retrieved from ApiService
-
-    // handle error 
-
-    return;
+    // handle error
+    return this.api
+      .getAppointments(patientId)
+      .pipe(catchError(this.handleError));
   }
 
-  deleteAppointment(appointmentId): Observable<any> {
-
+  public deleteAppointment(appointmentId): Observable<any> {
     // should return response retrieved from ApiService
-
-    // handle error 
-
-    return;
+    // handle error
+    return this.api
+      .deleteAppointment(appointmentId)
+      .pipe(catchError(this.handleError));
   }
 
-  requestedAppointments(): Observable<any> {
-
+  public requestedAppointments(): Observable<any> {
     // should return response retrieved from ApiService
-
-    // handle error 
-
-    return;
+    // handle error
+    return this.api.requestedAppointments().pipe(catchError(this.handleError));
   }
 
-  getUserId(): number {
-
+  public getUserId(): number {
     // retrieve 'userId' from localstorage
-
-    return;
+    const userId = parseInt(localStorage.getItem("userId"), 10);
+    if (!this.isLoggedIn) return -1;
+    return userId ? userId : -1;
   }
 
-
+  private handleError(error: any) {
+    return Observable.throw(error);
+  }
 }
-
